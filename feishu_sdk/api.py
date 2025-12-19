@@ -1,7 +1,8 @@
-import os
 import logging
-import requests
+import os
 from typing import Optional
+
+import requests
 
 # const
 TENANT_ACCESS_TOKEN_URI = "/open-apis/auth/v3/tenant_access_token/internal"
@@ -16,7 +17,9 @@ class MessageApiClient(object):
         self._tenant_access_token = ""
 
     @classmethod
-    def from_env(cls, lark_host: str, app_id_env: str = "APP_ID", app_secret_env: str = "APP_SECRET"):
+    def from_env(
+        cls, lark_host: str, app_id_env: str = "APP_ID", app_secret_env: str = "APP_SECRET"
+    ):
         """Create client from environment variables"""
         app_id = os.getenv(app_id_env)
         app_secret = os.getenv(app_secret_env)
@@ -38,9 +41,7 @@ class MessageApiClient(object):
         # Updates message card that was sent previously
         # doc link: https://open.feishu.cn/document/server-docs/im-v1/message-card/patch?appId=cli_a6ac1c1b7df9900e
         self._authorize_tenant_access_token()
-        url = "{}{}/{}".format(
-            self._lark_host, MESSAGE_URI, message_id
-        )
+        url = "{}{}/{}".format(self._lark_host, MESSAGE_URI, message_id)
         headers = {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + self.tenant_access_token,
@@ -52,14 +53,11 @@ class MessageApiClient(object):
         resp = requests.patch(url, headers=headers, json=req_body)
         MessageApiClient._check_error_response(resp)
 
-
     def send(self, receive_id_type: str, receive_id: str, msg_type: str, content: str):
         # send message to user, implemented based on Feishu open api capability.
         # doc link: https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/create
         self._authorize_tenant_access_token()
-        url = "{}{}?receive_id_type={}".format(
-            self._lark_host, MESSAGE_URI, receive_id_type
-        )
+        url = "{}{}?receive_id_type={}".format(self._lark_host, MESSAGE_URI, receive_id_type)
         headers = {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + self.tenant_access_token,

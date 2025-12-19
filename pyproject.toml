@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A simple Python SDK for building Feishu/Lark bots"
 authors = [{name = "Lianne Lee", email = "liannejoylee@gmail.com"}]
 maintainers = [{name = "Month2Month", email = "engineering@month2month.com"}]
-license = "MIT"
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = [
@@ -24,6 +24,7 @@ keywords = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",

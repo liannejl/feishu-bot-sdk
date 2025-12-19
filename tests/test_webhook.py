@@ -1,8 +1,10 @@
 """Tests for feishu_sdk.webhook module."""
 
 import json
+
 import pytest
 from flask import Flask
+
 from feishu_sdk.webhook import WebhookHandler, create_webhook_handler
 
 
@@ -55,6 +57,7 @@ class TestWebhookHandler:
 
     def test_message_handler_decorator(self, handler):
         """Test message handler decorator registration."""
+
         @handler.message_handler("text")
         def handle_text(event):
             pass
@@ -64,6 +67,7 @@ class TestWebhookHandler:
 
     def test_message_handler_default_type(self, handler):
         """Test message handler with default type."""
+
         @handler.message_handler()
         def handle_default(event):
             pass
@@ -72,6 +76,7 @@ class TestWebhookHandler:
 
     def test_event_handler_decorator(self, handler):
         """Test event handler decorator registration."""
+
         @handler.event_handler("user.created")
         def handle_user_created(event):
             pass
@@ -83,11 +88,8 @@ class TestWebhookHandler:
         """Test URL verification handling."""
         response = client.post(
             "/webhook",
-            json={
-                "type": "url_verification",
-                "challenge": "test_challenge_123"
-            },
-            content_type="application/json"
+            json={"type": "url_verification", "challenge": "test_challenge_123"},
+            content_type="application/json",
         )
         assert response.status_code == 200
         data = json.loads(response.data)
@@ -96,9 +98,7 @@ class TestWebhookHandler:
     def test_invalid_event_returns_400(self, client):
         """Test that invalid events return 400."""
         response = client.post(
-            "/webhook",
-            json={"invalid": "data"},
-            content_type="application/json"
+            "/webhook", json={"invalid": "data"}, content_type="application/json"
         )
         assert response.status_code == 400
         data = json.loads(response.data)
@@ -115,37 +115,24 @@ class TestWebhookHandler:
         response = client.post(
             "/webhook",
             json={
-                "header": {
-                    "event_type": "im.message.receive_v1"
-                },
-                "event": {
-                    "message": {
-                        "message_type": "text",
-                        "content": '{"text": "Hello"}'
-                    }
-                }
+                "header": {"event_type": "im.message.receive_v1"},
+                "event": {"message": {"message_type": "text", "content": '{"text": "Hello"}'}},
             },
-            content_type="application/json"
+            content_type="application/json",
         )
         assert response.status_code == 200
 
     def test_valid_custom_event(self, client, handler):
         """Test handling custom event type."""
+
         @handler.event_handler("custom.event.type")
         def handle_custom(event):
             pass
 
         response = client.post(
             "/webhook",
-            json={
-                "header": {
-                    "event_type": "custom.event.type"
-                },
-                "event": {
-                    "data": "test"
-                }
-            },
-            content_type="application/json"
+            json={"header": {"event_type": "custom.event.type"}, "event": {"data": "test"}},
+            content_type="application/json",
         )
         assert response.status_code == 200
 
@@ -153,15 +140,8 @@ class TestWebhookHandler:
         """Test that unhandled event types return 200."""
         response = client.post(
             "/webhook",
-            json={
-                "header": {
-                    "event_type": "unknown.event"
-                },
-                "event": {
-                    "data": "test"
-                }
-            },
-            content_type="application/json"
+            json={"header": {"event_type": "unknown.event"}, "event": {"data": "test"}},
+            content_type="application/json",
         )
         assert response.status_code == 200
 
@@ -201,6 +181,7 @@ class TestAsyncHandlers:
 
     def test_register_async_message_handler(self, handler):
         """Test registering an async message handler."""
+
         @handler.message_handler("text")
         async def async_handler(event):
             return "handled"
@@ -209,6 +190,7 @@ class TestAsyncHandlers:
 
     def test_register_async_event_handler(self, handler):
         """Test registering an async event handler."""
+
         @handler.event_handler("test.event")
         async def async_handler(event):
             return "handled"

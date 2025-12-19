@@ -1,9 +1,11 @@
 """Tests for feishu_sdk.api module."""
 
 import os
+
 import pytest
 import responses
-from feishu_sdk.api import MessageApiClient, LarkException
+
+from feishu_sdk.api import LarkException, MessageApiClient
 
 
 class TestMessageApiClient:
@@ -13,9 +15,7 @@ class TestMessageApiClient:
     def client(self):
         """Create a test client."""
         return MessageApiClient(
-            app_id="test_app_id",
-            app_secret="test_app_secret",
-            lark_host="https://open.feishu.cn"
+            app_id="test_app_id", app_secret="test_app_secret", lark_host="https://open.feishu.cn"
         )
 
     def test_init(self, client):
@@ -45,9 +45,7 @@ class TestMessageApiClient:
         monkeypatch.setenv("MY_APP_SECRET", "custom_secret")
 
         client = MessageApiClient.from_env(
-            "https://open.feishu.cn",
-            app_id_env="MY_APP_ID",
-            app_secret_env="MY_APP_SECRET"
+            "https://open.feishu.cn", app_id_env="MY_APP_ID", app_secret_env="MY_APP_SECRET"
         )
         assert client._app_id == "custom_id"
         assert client._app_secret == "custom_secret"
@@ -77,7 +75,7 @@ class TestMessageApiClient:
             responses.POST,
             "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
             json={"code": 0, "tenant_access_token": "new_token"},
-            status=200
+            status=200,
         )
 
         client._authorize_tenant_access_token()
@@ -90,7 +88,7 @@ class TestMessageApiClient:
             responses.POST,
             "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
             json={"code": 99991, "msg": "invalid app_id"},
-            status=200
+            status=200,
         )
 
         with pytest.raises(LarkException) as exc_info:
@@ -105,14 +103,14 @@ class TestMessageApiClient:
             responses.POST,
             "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
             json={"code": 0, "tenant_access_token": "test_token"},
-            status=200
+            status=200,
         )
         # Mock message endpoint
         responses.add(
             responses.POST,
             "https://open.feishu.cn/open-apis/im/v1/messages",
             json={"code": 0, "data": {"message_id": "msg_123"}},
-            status=200
+            status=200,
         )
 
         client.send_text_with_open_id("ou_123", "Hello World")
@@ -129,13 +127,13 @@ class TestMessageApiClient:
             responses.POST,
             "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
             json={"code": 0, "tenant_access_token": "test_token"},
-            status=200
+            status=200,
         )
         responses.add(
             responses.POST,
             "https://open.feishu.cn/open-apis/im/v1/messages",
             json={"code": 0, "data": {"message_id": "msg_456"}},
-            status=200
+            status=200,
         )
 
         card_content = '{"elements": []}'
@@ -149,13 +147,13 @@ class TestMessageApiClient:
             responses.POST,
             "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
             json={"code": 0, "tenant_access_token": "test_token"},
-            status=200
+            status=200,
         )
         responses.add(
             responses.PATCH,
             "https://open.feishu.cn/open-apis/im/v1/messages/msg_123",
             json={"code": 0},
-            status=200
+            status=200,
         )
 
         client.send_update_message_card("msg_123", '{"elements": []}')
@@ -171,7 +169,7 @@ class TestMessageApiClient:
             responses.POST,
             "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
             json={"error": "server error"},
-            status=500
+            status=500,
         )
 
         with pytest.raises(Exception):  # requests.HTTPError
@@ -184,7 +182,7 @@ class TestMessageApiClient:
             responses.POST,
             "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
             json={"code": 10001, "msg": "Invalid token"},
-            status=200
+            status=200,
         )
 
         with pytest.raises(LarkException) as exc_info:

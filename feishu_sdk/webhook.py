@@ -1,7 +1,8 @@
-import json
 import asyncio
+import json
 from threading import Thread
-from typing import Callable, Optional, Dict, Any
+from typing import Any, Callable, Dict, Optional
+
 from flask import Flask, jsonify, request
 
 from .event import Event, InvalidEventException
@@ -12,7 +13,7 @@ class WebhookHandler:
     Handles Feishu webhook events with standard URL verification and message processing
     """
 
-    def __init__(self, app: Optional[Flask] = None, endpoint: str = '/webhook'):
+    def __init__(self, app: Optional[Flask] = None, endpoint: str = "/webhook"):
         self.app = app
         self.endpoint = endpoint
         self.message_handlers = {}
@@ -24,25 +25,24 @@ class WebhookHandler:
     def init_app(self, app: Flask):
         """Initialize the webhook handler with a Flask app"""
         self.app = app
-        app.add_url_rule(
-            self.endpoint,
-            'feishu_webhook',
-            self._webhook_handler,
-            methods=['POST']
-        )
+        app.add_url_rule(self.endpoint, "feishu_webhook", self._webhook_handler, methods=["POST"])
 
-    def message_handler(self, message_type: str = 'text'):
+    def message_handler(self, message_type: str = "text"):
         """Decorator to register message handlers"""
+
         def decorator(func: Callable):
             self.message_handlers[message_type] = func
             return func
+
         return decorator
 
     def event_handler(self, event_type: str):
         """Decorator to register event handlers"""
+
         def decorator(func: Callable):
             self.event_handlers[event_type] = func
             return func
+
         return decorator
 
     def _webhook_handler(self):
@@ -50,8 +50,8 @@ class WebhookHandler:
         req_data = request.json
 
         # Handle URL verification
-        if 'type' in req_data and req_data['type'] == 'url_verification':
-            return jsonify({'challenge': req_data['challenge']})
+        if "type" in req_data and req_data["type"] == "url_verification":
+            return jsonify({"challenge": req_data["challenge"]})
 
         # Handle events
         try:
@@ -73,7 +73,7 @@ class WebhookHandler:
             return jsonify()
 
         except InvalidEventException:
-            return jsonify({'error': 'Invalid event'}), 400
+            return jsonify({"error": "Invalid event"}), 400
 
     def _async_message_processing(self, req_data: Dict[str, Any]):
         """Process message events asynchronously"""
@@ -115,6 +115,6 @@ class WebhookHandler:
             print(f"Error processing event {event_type}: {e}")
 
 
-def create_webhook_handler(app: Flask, endpoint: str = '/webhook') -> WebhookHandler:
+def create_webhook_handler(app: Flask, endpoint: str = "/webhook") -> WebhookHandler:
     """Factory function to create and configure a webhook handler"""
     return WebhookHandler(app, endpoint)

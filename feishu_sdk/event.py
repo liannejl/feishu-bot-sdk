@@ -1,5 +1,6 @@
 from .utils import dict_2_obj
 
+
 class Event(object):
     callback_handler = None
 

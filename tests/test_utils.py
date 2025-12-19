@@ -1,6 +1,7 @@
 """Tests for feishu_sdk.utils module."""
 
 import pytest
+
 from feishu_sdk.utils import Obj, dict_2_obj
 
 
@@ -16,24 +17,14 @@ class TestObj:
 
     def test_nested_dict(self):
         """Test converting nested dictionaries."""
-        data = {
-            "user": {
-                "name": "John",
-                "email": "john@example.com"
-            }
-        }
+        data = {"user": {"name": "John", "email": "john@example.com"}}
         obj = Obj(data)
         assert obj.user.name == "John"
         assert obj.user.email == "john@example.com"
 
     def test_list_of_dicts(self):
         """Test converting lists containing dictionaries."""
-        data = {
-            "items": [
-                {"id": 1, "name": "first"},
-                {"id": 2, "name": "second"}
-            ]
-        }
+        data = {"items": [{"id": 1, "name": "first"}, {"id": 2, "name": "second"}]}
         obj = Obj(data)
         assert len(obj.items) == 2
         assert obj.items[0].id == 1
@@ -49,13 +40,7 @@ class TestObj:
 
     def test_mixed_list(self):
         """Test lists with mixed types."""
-        data = {
-            "mixed": [
-                {"key": "value"},
-                "string",
-                123
-            ]
-        }
+        data = {"mixed": [{"key": "value"}, "string", 123]}
         obj = Obj(data)
         assert obj.mixed[0].key == "value"
         assert obj.mixed[1] == "string"
@@ -87,14 +72,6 @@ class TestDict2Obj:
 
     def test_deeply_nested(self):
         """Test deeply nested structures."""
-        data = {
-            "level1": {
-                "level2": {
-                    "level3": {
-                        "value": "deep"
-                    }
-                }
-            }
-        }
+        data = {"level1": {"level2": {"level3": {"value": "deep"}}}}
         obj = dict_2_obj(data)
         assert obj.level1.level2.level3.value == "deep"
