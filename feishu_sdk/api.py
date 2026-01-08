@@ -41,6 +41,9 @@ class MessageApiClient(object):
     def send_text_with_open_id(self, open_id: str, content: str):
         self.send("open_id", open_id, "text", content)
 
+    def send_rich_text_with_open_id(self, open_id: str, content: str):
+        self.send("open_id", open_id, "post", content)
+
     def send_card_with_open_id(self, open_id: str, content: str):
         return self.send("open_id", open_id, "interactive", content)
 
